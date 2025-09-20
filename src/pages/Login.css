@@ -1,0 +1,96 @@
+/* Fondo pantalla completa */
+.login-bg {
+  --background: none; /* Quitar fondo por defecto de IonContent */
+  background: url("assets/Seguridad.jpg") no-repeat center center fixed;
+  background-size: cover;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;   /* importante: ocupa todo IonContent */
+  min-height: 100vh; /* asegura cubrir la pantalla completa */
+}
+
+/* Contenedor centrado */
+.login-container {
+  background: rgba(0, 0, 0, 0.7); /* más oscuro para contraste */
+  backdrop-filter: blur(6px);
+  padding: 2rem;
+  border-radius: 16px;
+  width: 90%;
+  max-width: 380px;
+  text-align: center;
+
+  display: flex;
+  flex-direction: column;
+  align-items: stretch; /* inputs ocupan el ancho */
+  justify-content: center;
+}
+
+/* Título */
+.login-title {
+  color: #fff;
+  margin-bottom: 1.5rem;
+  font-size: 1.5rem;
+  font-weight: bold;
+}
+
+/* Items */
+.login-item {
+  --background: transparent;
+  --border-color: #fff;
+  color: #fff;
+  margin-bottom: 1rem;
+}
+
+/* Inputs */
+ion-input {
+  color: #fff;
+}
+
+/* Password con ícono */
+.password-wrapper {
+  display: flex;
+  align-items: center;
+  width: 100%;
+}
+
+.password-toggle {
+  font-size: 1.4rem;
+  margin-left: 8px;
+  cursor: pointer;
+  color: #fff;
+}
+
+/* Checkbox */
+.remember-container {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+  color: #fff;
+}
+
+/* Botón */
+.login-button {
+  --background: #3880ff;
+  margin-top: 1rem;
+}
+
+/* Links */
+.login-links {
+  margin-top: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  color: #fff;
+  cursor: pointer;
+}
+
+.login-links ion-text[color="primary"] {
+  color: #4da3ff; /* azul más visible */
+}
+
+.login-links ion-text[color="medium"] {
+  color: #ccc;
+}
