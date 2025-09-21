@@ -3,12 +3,14 @@
   --background: none; /* Quitar fondo por defecto de IonContent */
   background: url("assets/Seguridad.jpg") no-repeat center center fixed;
   background-size: cover;
+  position: relative;
 
   display: flex;
   align-items: center;
   justify-content: center;
-  height: 100%;   /* importante: ocupa todo IonContent */
-  min-height: 100vh; /* asegura cubrir la pantalla completa */
+  height: 100%;
+  min-height: 100vh;
+  width: 100%;
 }
 
 /* Contenedor centrado */
@@ -20,10 +22,11 @@
   width: 90%;
   max-width: 380px;
   text-align: center;
+  margin: 0 auto;
 
   display: flex;
   flex-direction: column;
-  align-items: stretch; /* inputs ocupan el ancho */
+  align-items: center; /* Centrar todos los elementos */
   justify-content: center;
 }
 
@@ -39,13 +42,45 @@
 .login-item {
   --background: transparent;
   --border-color: #fff;
+  --border-width: 2px;
+  --border-style: solid;
+  --border-radius: 8px;
   color: #fff;
   margin-bottom: 1rem;
+  width: 100%;
+  max-width: 300px;
+  background: transparent;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
 /* Inputs */
 ion-input {
-  color: #fff;
+  color: #fff !important;
+  --placeholder-color: #ccc !important;
+  --color: #fff !important;
+  font-size: 16px !important;
+  --padding-start: 16px !important;
+  --padding-end: 16px !important;
+  width: 100% !important;
+  --background: transparent !important;
+}
+
+/* Input nativo para mejor visibilidad */
+.login-item ion-input input {
+  color: #fff !important;
+  background: transparent !important;
+  border: none !important;
+  outline: none !important;
+  font-size: 16px !important;
+  padding: 12px 16px !important;
+}
+
+/* Placeholder mejorado */
+.login-item ion-input input::placeholder {
+  color: #ccc !important;
+  opacity: 0.8 !important;
 }
 
 /* Password con ícono */
@@ -60,21 +95,72 @@ ion-input {
   margin-left: 8px;
   cursor: pointer;
   color: #fff;
+  position: absolute;
+  right: 16px;
+  z-index: 10;
 }
 
 /* Checkbox */
 .remember-container {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin: 1rem 0;
+  justify-content: flex-start;
+  gap: 0.75rem;
+  margin: 1rem auto;
   color: #fff;
+  width: 100%;
+  max-width: 300px;
+  padding-left: 0.5rem;
 }
+
+.custom-checkbox {
+  width: 20px;
+  height: 20px;
+  border: 2px solid #fff;
+  border-radius: 4px;
+  background: transparent;
+  cursor: pointer;
+  flex-shrink: 0;
+  position: relative;
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+}
+
+.custom-checkbox:checked {
+  background: transparent;
+  border-color: #fff;
+}
+
+.custom-checkbox:checked::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.checkbox-label {
+  color: #fff;
+  cursor: pointer;
+  font-size: 16px;
+  margin: 0;
+}
+
+
 
 /* Botón */
 .login-button {
   --background: #3880ff;
   margin-top: 1rem;
+  width: 100%;
+  max-width: 300px;
+  margin-left: auto;
+  margin-right: auto;
+  display: block;
 }
 
 /* Links */
@@ -82,6 +168,7 @@ ion-input {
   margin-top: 1.5rem;
   display: flex;
   flex-direction: column;
+  align-items: center;
   gap: 0.5rem;
   color: #fff;
   cursor: pointer;
@@ -93,4 +180,30 @@ ion-input {
 
 .login-links ion-text[color="medium"] {
   color: #ccc;
+}
+
+/* Estilos personalizados para toasts */
+.custom-toast {
+  --border-radius: 12px;
+  --box-shadow: 0 4px 12px hsla(180, 4%, 5%, 0.881);
+  font-weight: 500;
+  text-align: center;
+}
+
+/* Toast de éxito */
+.custom-toast.toast-success {
+  --background: #10dc60;
+  --color: #fff;
+}
+
+/* Toast de error */
+.custom-toast.toast-danger {
+  --background: #f04141;
+  --color: #fff;
+}
+
+/* Toast de advertencia */
+.custom-toast.toast-warning {
+  --background: #ff9800;
+  --color: #fff;
 }

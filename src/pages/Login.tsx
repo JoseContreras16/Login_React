@@ -9,6 +9,7 @@ import {
   IonCheckbox,
   IonText,
   IonIcon,
+  IonToast,
 } from "@ionic/react";
 import { eye, eyeOff } from "ionicons/icons";
 import "./Login.css";
@@ -17,6 +18,31 @@ const Login: React.FC = () => {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+
+  // Estados para los toasts
+  const [showToast, setShowToast] = useState(false);
+  const [toastMessage, setToastMessage] = useState("");
+  const [toastColor, setToastColor] = useState<"success" | "danger" | "warning">("success");
+
+  // Función para manejar el login
+  const handleLogin = () => {
+    if (!email || !password) {
+      setToastMessage("Por favor complete todos los campos");
+      setToastColor("warning");
+      setShowToast(true);
+      return;
+    }
+
+    if (email === "admin" && password === "123") {
+      setToastMessage("¡Inicio de sesión exitoso! Bienvenido");
+      setToastColor("success");
+      setShowToast(true);
+    } else {
+      setToastMessage("Error: Credenciales incorrectas");
+      setToastColor("danger");
+      setShowToast(true);
+    }
+  };
 
   return (
     <IonPage>
@@ -57,12 +83,18 @@ const Login: React.FC = () => {
 
           {/* Checkbox recordar */}
           <div className="remember-container">
-            <IonCheckbox />
-            <IonLabel>Recordar contraseña</IonLabel>
+            <input
+              type="checkbox"
+              id="remember"
+              className="custom-checkbox"
+            />
+            <label htmlFor="remember" className="checkbox-label">
+              Recordar contraseña
+            </label>
           </div>
 
           {/* Botón login */}
-          <IonButton expand="block" className="login-button">
+          <IonButton expand="block" className="login-button" onClick={handleLogin}>
             Login
           </IonButton>
 
@@ -72,6 +104,23 @@ const Login: React.FC = () => {
             <IonText color="medium">Forgot your password?</IonText>
           </div>
         </div>
+
+        {/* Toast para notificaciones */}
+        <IonToast
+          isOpen={showToast}
+          onDidDismiss={() => setShowToast(false)}
+          message={toastMessage}
+          duration={3000}
+          color={toastColor}
+          position="top"
+          buttons={[
+            {
+              text: 'OK',
+              role: 'cancel',
+              handler: () => setShowToast(false)
+            }
+          ]}
+        />
       </IonContent>
     </IonPage>
   );
