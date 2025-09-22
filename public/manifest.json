@@ -1,6 +1,6 @@
 {
-  "short_name": "Ionic App",
-  "name": "My Ionic App",
+  "short_name": "App Login",
+  "name": "Mi App de Login",
   "icons": [
     {
       "src": "assets/icon/favicon.png",

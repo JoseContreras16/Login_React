@@ -12,6 +12,7 @@ import {
   IonToast,
 } from "@ionic/react";
 import { eye, eyeOff } from "ionicons/icons";
+import { useHistory } from "react-router-dom";
 import "./Login.css";
 
 const Login: React.FC = () => {
@@ -23,6 +24,8 @@ const Login: React.FC = () => {
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastColor, setToastColor] = useState<"success" | "danger" | "warning">("success");
+
+  const history = useHistory();
 
   // Función para manejar el login
   const handleLogin = () => {
@@ -44,11 +47,21 @@ const Login: React.FC = () => {
     }
   };
 
+  // Función para navegar al Sign Up
+  const goToSignUp = () => {
+    history.push("/signup");
+  };
+
+  // Función para navegar a Forgot Password
+  const goToForgotPassword = () => {
+    history.push("/forgot-password");
+  };
+
   return (
     <IonPage>
       <IonContent className="login-bg" fullscreen>
         <div className="login-container">
-          <h2 className="login-title">Sign In</h2>
+          <h2 className="login-title">Iniciar Sesión</h2>
 
           {/* Campo correo */}
           <IonItem className="login-item">
@@ -95,13 +108,13 @@ const Login: React.FC = () => {
 
           {/* Botón login */}
           <IonButton expand="block" className="login-button" onClick={handleLogin}>
-            Login
+            Iniciar Sesión
           </IonButton>
 
           {/* Enlaces */}
           <div className="login-links">
-            <IonText color="primary">Sign Up</IonText>
-            <IonText color="medium">Forgot your password?</IonText>
+            <IonText color="primary" onClick={goToSignUp} className="link-text">Registrarse</IonText>
+            <IonText color="medium" onClick={goToForgotPassword} className="link-text">¿Olvidaste tu contraseña?</IonText>
           </div>
         </div>
 
@@ -115,7 +128,7 @@ const Login: React.FC = () => {
           position="top"
           buttons={[
             {
-              text: 'OK',
+              text: 'Aceptar',
               role: 'cancel',
               handler: () => setShowToast(false)
             }
