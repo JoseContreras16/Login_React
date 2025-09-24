@@ -2,11 +2,10 @@ import React, { useState } from "react";
 import {
   IonPage,
   IonContent,
-  IonInput,
   IonItem,
   IonLabel,
+  IonInput,
   IonButton,
-  IonCheckbox,
   IonText,
   IonIcon,
   IonToast,
@@ -14,6 +13,7 @@ import {
 import { eye, eyeOff } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import "./Login.css";
+import "../theme/toast.css"; // <<< estilos del toast (nuevo archivo)
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -90,6 +90,7 @@ const Login: React.FC = () => {
                 icon={showPassword ? eyeOff : eye}
                 onClick={() => setShowPassword(!showPassword)}
                 className="password-toggle"
+                style={{ cursor: "pointer" }}
               />
             </div>
           </IonItem>
@@ -118,14 +119,15 @@ const Login: React.FC = () => {
           </div>
         </div>
 
-        {/* Toast para notificaciones */}
+        {/* Toast para notificaciones - ABAJO (position="bottom") */}
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message={toastMessage}
           duration={3000}
           color={toastColor}
-          position="top"
+          position="bottom"                     // <- aquí lo importante
+          cssClass={`custom-toast toast-${toastColor}`} // clases para diseño
           buttons={[
             {
               text: 'Aceptar',

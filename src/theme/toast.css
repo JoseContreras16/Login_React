@@ -1,0 +1,30 @@
+/* src/theme/toast.css */
+
+/* Estilo general del IonToast */
+.custom-toast {
+  border-radius: 12px;      /* puntas ovaladas */
+  padding: 12px 20px;
+  font-size: 14px;
+  font-weight: 500;
+  color: white;
+  text-align: center;
+  bottom: 20px !important;  /* siempre abajo */
+}
+
+/* Colores según el tipo */
+.toast-success {
+  background-color: #28a745 !important; /* verde */
+}
+
+.toast-error {
+  background-color: #dc3545 !important; /* rojo */
+}
+
+.toast-warning {
+  background-color: #ffc107 !important; /* amarillo */
+  color: black !important;
+}
+
+.toast-info {
+  background-color: #17a2b8 !important; /* azul */
+}

@@ -17,6 +17,7 @@ import {
 import { mail, checkmarkCircle } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import "./ForgotPassword.css";
+import "../theme/toast.css"; // <<< estilos del toast
 
 const ForgotPassword: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -177,14 +178,15 @@ const ForgotPassword: React.FC = () => {
           </div>
         </div>
 
-        {/* Toast para notificaciones */}
+        {/* Toast para notificaciones - ABAJO */}
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message={toastMessage}
           duration={4000}
           color={toastColor}
-          position="top"
+          position="bottom"
+          cssClass={`custom-toast toast-${toastColor}`}
           buttons={[
             {
               text: 'Aceptar',

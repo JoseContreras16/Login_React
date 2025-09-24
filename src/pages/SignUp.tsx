@@ -2,9 +2,9 @@ import React, { useState } from "react";
 import {
   IonPage,
   IonContent,
-  IonInput,
   IonItem,
   IonLabel,
+  IonInput,
   IonButton,
   IonText,
   IonIcon,
@@ -17,6 +17,7 @@ import {
 import { eye, eyeOff, mail, key } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import "./SignUp.css";
+import "../theme/toast.css"; // <<< estilos del toast
 
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
@@ -100,8 +101,8 @@ const SignUp: React.FC = () => {
       setToastColor("success");
       setShowToast(true);
 
-      // Redirigir inmediatamente al login
-      history.push("/login");
+      // Redirigir al login (después de un pequeño delay para ver el toast)
+      setTimeout(() => history.push("/login"), 800);
 
     } catch (error) {
       setToastMessage("Error al crear la cuenta. Intente nuevamente");
@@ -205,14 +206,15 @@ const SignUp: React.FC = () => {
           </div>
         </div>
 
-        {/* Toast para notificaciones */}
+        {/* Toast para notificaciones - ABAJO */}
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message={toastMessage}
           duration={3000}
           color={toastColor}
-          position="top"
+          position="bottom"
+          cssClass={`custom-toast toast-${toastColor}`}
           buttons={[
             {
               text: 'Aceptar',
