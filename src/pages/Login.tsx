@@ -66,8 +66,9 @@ const Login: React.FC = () => {
           setToastColor("success");
           setShowToast(true);
 
-           
-          
+          // Store authentication state
+          localStorage.setItem('isAuthenticated', 'true');
+
           setTimeout(() => {
             history.push("/home"); // 👈 asegúrate que tu ruta Home esté definida
           // history.push("/dashboard");
@@ -142,7 +143,7 @@ const Login: React.FC = () => {
           <div className="remember-container">
             <input type="checkbox" id="remember" className="custom-checkbox" />
             <label htmlFor="remember" className="checkbox-label">
-              Recordar contraseña
+              Recordar me
             </label>
           </div>
 
