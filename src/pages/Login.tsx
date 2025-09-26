@@ -1,3 +1,4 @@
+// src/pages/Login.tsx
 import React, { useState } from "react";
 import {
   IonPage,
@@ -13,7 +14,7 @@ import {
 import { eye, eyeOff } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import "./Login.css";
-import "../theme/toast.css"; // <<< estilos del toast (nuevo archivo)
+import "../theme/toast.css";
 
 const Login: React.FC = () => {
   const [email, setEmail] = useState("");
@@ -23,12 +24,14 @@ const Login: React.FC = () => {
   // Estados para los toasts
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
-  const [toastColor, setToastColor] = useState<"success" | "danger" | "warning">("success");
+  const [toastColor, setToastColor] = useState<
+    "success" | "danger" | "warning"
+  >("success");
 
   const history = useHistory();
 
-  // Función para manejar el login
-  const handleLogin = () => {
+  // Función para manejar el login con el backend
+  const handleLogin = async () => {
     if (!email || !password) {
       setToastMessage("Por favor complete todos los campos");
       setToastColor("warning");
@@ -36,23 +39,63 @@ const Login: React.FC = () => {
       return;
     }
 
-    if (email === "admin" && password === "123") {
-      setToastMessage("¡Inicio de sesión exitoso! Bienvenido");
-      setToastColor("success");
-      setShowToast(true);
-    } else {
-      setToastMessage("Error: Credenciales incorrectas");
+    try {
+      const response = await fetch(
+        "https://smartloansbackend.azurewebsites.net/login",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            logins: [
+              {
+                username: email, // <- se envía lo que ingreses en email
+                password: password, // <- y lo que ingreses en password
+              },
+            ],
+          }),
+        }
+      );
+
+      const data = await response.json();
+
+      if (data.result && data.result.length > 0) {
+        const { value, msg, error } = data.result[0];
+
+        if (!error && value === "1") {
+          setToastMessage(msg || "¡Inicio de sesión exitoso!");
+          setToastColor("success");
+          setShowToast(true);
+
+           
+          
+          setTimeout(() => {
+            history.push("/home"); // 👈 asegúrate que tu ruta Home esté definida
+          // history.push("/dashboard");
+          }, 1500);
+
+          
+        } else {
+          setToastMessage(error || "Error en inicio de sesión");
+          setToastColor("danger");
+          setShowToast(true);
+        }
+      } else {
+        setToastMessage("Respuesta inesperada del servidor");
+        setToastColor("danger");
+        setShowToast(true);
+      }
+    } catch (err) {
+      console.error(err);
+      setToastMessage("Error de conexión con el servidor");
       setToastColor("danger");
       setShowToast(true);
     }
   };
 
-  // Función para navegar al Sign Up
   const goToSignUp = () => {
     history.push("/signup");
   };
 
-  // Función para navegar a Forgot Password
   const goToForgotPassword = () => {
     history.push("/forgot-password");
   };
@@ -97,43 +140,55 @@ const Login: React.FC = () => {
 
           {/* Checkbox recordar */}
           <div className="remember-container">
-            <input
-              type="checkbox"
-              id="remember"
-              className="custom-checkbox"
-            />
+            <input type="checkbox" id="remember" className="custom-checkbox" />
             <label htmlFor="remember" className="checkbox-label">
               Recordar contraseña
             </label>
           </div>
 
           {/* Botón login */}
-          <IonButton expand="block" className="login-button" onClick={handleLogin}>
+          <IonButton
+            expand="block"
+            className="login-button"
+            onClick={handleLogin}
+          >
             Iniciar Sesión
           </IonButton>
 
           {/* Enlaces */}
           <div className="login-links">
-            <IonText color="primary" onClick={goToSignUp} className="link-text">Registrarse</IonText>
-            <IonText color="medium" onClick={goToForgotPassword} className="link-text">¿Olvidaste tu contraseña?</IonText>
+            <IonText
+              color="primary"
+              onClick={goToSignUp}
+              className="link-text"
+            >
+              Registrarse
+            </IonText>
+            <IonText
+              color="medium"
+              onClick={goToForgotPassword}
+              className="link-text"
+            >
+              ¿Olvidaste tu contraseña?
+            </IonText>
           </div>
         </div>
 
-        {/* Toast para notificaciones - ABAJO (position="bottom") */}
+        {/* Toast */}
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
           message={toastMessage}
           duration={3000}
           color={toastColor}
-          position="bottom"                     // <- aquí lo importante
-          cssClass={`custom-toast toast-${toastColor}`} // clases para diseño
+          position="bottom"
+          cssClass={`custom-toast toast-${toastColor}`}
           buttons={[
             {
-              text: 'Aceptar',
-              role: 'cancel',
-              handler: () => setShowToast(false)
-            }
+              text: "Aceptar",
+              role: "cancel",
+              handler: () => setShowToast(false),
+            },
           ]}
         />
       </IonContent>
