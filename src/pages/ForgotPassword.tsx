@@ -58,17 +58,67 @@ const ForgotPassword: React.FC = () => {
     setIsLoading(true);
 
     try {
-      // Simular envío de email
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const response = await fetch(
+        "https://smartloansbackend.azurewebsites.net/one_users_email",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            users: [
+              {
+                email: email,
+              },
+            ],
+          }),
+        }
+      );
 
-      // Simular envío exitoso
-      setIsEmailSent(true);
-      setToastMessage("¡Email de recuperación enviado! Revisa tu bandeja de entrada");
-      setToastColor("success");
-      setShowToast(true);
+      const data = await response.json();
 
+      if (data.users && data.users.length > 0) {
+        const user = data.users[0];
+        if (user.active === "1") {
+          // Now call the send_recovery_email endpoint
+          const recoveryResponse = await fetch(
+            "https://smartloansbackend.azurewebsites.net/send_recovery_email",
+            {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              body: JSON.stringify({
+                users: [
+                  {
+                    email: email,
+                  },
+                ],
+              }),
+            }
+          );
+
+          const recoveryData = await recoveryResponse.json();
+
+          if (recoveryData.message === "Email sent successfully") {
+            setIsEmailSent(true);
+            setToastMessage("¡Email de recuperación enviado! Revisa tu bandeja de entrada");
+            setToastColor("success");
+            setShowToast(true);
+          } else {
+            setToastMessage("Error al enviar el email de recuperación.");
+            setToastColor("danger");
+            setShowToast(true);
+          }
+        } else {
+          setToastMessage("Usuario inactivo. Contacta al administrador.");
+          setToastColor("danger");
+          setShowToast(true);
+        }
+      } else {
+        setToastMessage("Usuario no encontrado. Verifica el correo electrónico.");
+        setToastColor("danger");
+        setShowToast(true);
+      }
     } catch (error) {
-      setToastMessage("Error al enviar el email. Intente nuevamente");
+      console.error(error);
+      setToastMessage("Error al procesar la solicitud. Intente nuevamente");
       setToastColor("danger");
       setShowToast(true);
     } finally {
