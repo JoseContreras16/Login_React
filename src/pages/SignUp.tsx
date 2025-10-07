@@ -14,14 +14,15 @@ import {
   IonHeader,
   IonToolbar,
 } from "@ionic/react";
-import { eye, eyeOff, mail, key } from "ionicons/icons";
+import { eye, eyeOff, mail, key, person } from "ionicons/icons";
 import { useHistory } from "react-router-dom";
 import "./SignUp.css";
-import "../theme/toast.css"; // <<< estilos del toast
+import "../theme/toast.css";
 
 const SignUp: React.FC = () => {
   const [formData, setFormData] = useState({
     email: "",
+    username: "",
     password: "",
     confirmPassword: "",
   });
@@ -30,109 +31,118 @@ const SignUp: React.FC = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
-  // Estados para los toasts
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState("");
   const [toastColor, setToastColor] = useState<"success" | "danger" | "warning">("success");
 
+  // 🔹 Key para forzar re-render del formulario
+  const [formKey, setFormKey] = useState(0);
+
   const history = useHistory();
 
-  // Función para actualizar los campos del formulario
   const handleInputChange = (field: string, value: string) => {
     setFormData(prev => ({
       ...prev,
-      [field]: value
+      [field]: value,
     }));
   };
 
-  // Función para validar el formulario
   const validateForm = () => {
-    if (!formData.email.trim()) {
-      setToastMessage("Por favor ingrese su correo electrónico");
-      setToastColor("warning");
-      setShowToast(true);
-      return false;
-    }
-
+    if (!formData.username.trim()) { showWarning("Por favor ingrese su nombre de usuario"); return false; }
+    if (!formData.email.trim()) { showWarning("Por favor ingrese su correo electrónico"); return false; }
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    if (!emailRegex.test(formData.email)) {
-      setToastMessage("Por favor ingrese un correo electrónico válido");
-      setToastColor("warning");
-      setShowToast(true);
-      return false;
-    }
-
-    if (!formData.password) {
-      setToastMessage("Por favor ingrese una contraseña");
-      setToastColor("warning");
-      setShowToast(true);
-      return false;
-    }
-
-    if (formData.password.length < 6) {
-      setToastMessage("La contraseña debe tener al menos 6 caracteres");
-      setToastColor("warning");
-      setShowToast(true);
-      return false;
-    }
-
-    if (formData.password !== formData.confirmPassword) {
-      setToastMessage("Las contraseñas no coinciden");
-      setToastColor("warning");
-      setShowToast(true);
-      return false;
-    }
-
+    if (!emailRegex.test(formData.email.trim())) { showWarning("Ingrese un correo electrónico válido"); return false; }
+    if (!formData.password.trim()) { showWarning("Por favor ingrese una contraseña"); return false; }
+    if (formData.password.trim().length < 6) { showWarning("La contraseña debe tener al menos 6 caracteres"); return false; }
+    if (formData.password.trim() !== formData.confirmPassword.trim()) { showWarning("Las contraseñas no coinciden"); return false; }
     return true;
   };
 
-  // Función para manejar el registro
+  const showWarning = (msg: string) => {
+    setToastMessage(msg);
+    setToastColor("warning");
+    setShowToast(true);
+  };
+
   const handleSignUp = async () => {
     if (!validateForm()) return;
-
     setIsLoading(true);
 
+    const userData = {
+      users: [
+        {
+          user_id: "0",
+          email: formData.email.trim(),
+          username: formData.username.trim(),
+          password: formData.password.trim(),
+          action: "1",
+        },
+      ],
+    };
+
     try {
-      // Simular llamada a API
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      const response = await fetch("https://smartloansbackend.azurewebsites.net/users", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify(userData),
+      });
 
-      // Simular registro exitoso
-      setToastMessage("¡Registro exitoso! Bienvenido a la aplicación");
-      setToastColor("success");
-      setShowToast(true);
+      if (!response.ok) throw new Error("Error en la conexión con el servidor");
 
-      // Redirigir al login (después de un pequeño delay para ver el toast)
-      setTimeout(() => history.push("/login"), 800);
+      const data = await response.json();
+      const backendMessage = data?.result?.[0]?.msg || "Respuesta desconocida del servidor";
 
-    } catch (error) {
-      setToastMessage("Error al crear la cuenta. Intente nuevamente");
+      if (backendMessage.toLowerCase().includes("inserted")) {
+        setToastColor("success");
+        setToastMessage("¡Registro exitoso!");
+        setShowToast(true);
+
+        // 🔹 Limpiar el formulario forzando un re-render
+        setFormData({ email: "", username: "", password: "", confirmPassword: "" });
+        setFormKey(prev => prev + 1);
+
+        setTimeout(() => history.push("/login"), 1200);
+      } else {
+        setToastColor("danger");
+        setToastMessage(backendMessage);
+        setShowToast(true);
+      }
+    } catch (error: any) {
       setToastColor("danger");
+      setToastMessage(error.message || "Error al conectar con el servidor");
       setShowToast(true);
     } finally {
       setIsLoading(false);
     }
   };
 
-  // Función para navegar al login
-  const goToLogin = () => {
-    history.push("/login");
-  };
+  const goToLogin = () => history.push("/login");
 
   return (
     <IonPage>
       <IonHeader>
         <IonToolbar>
-          <IonButtons slot="start">
-            <IonBackButton defaultHref="/login" />
-          </IonButtons>
+          <IonButtons slot="start"><IonBackButton defaultHref="/login" /></IonButtons>
         </IonToolbar>
       </IonHeader>
 
       <IonContent className="signup-bg" fullscreen>
-        <div className="signup-container">
+        {/* 🔹 Key fuerza re-render del formulario */}
+        <div className="signup-container" key={formKey}>
           <h2 className="signup-title">Registrarse</h2>
 
-          {/* Campo correo */}
+          <IonItem className="signup-item">
+            <IonLabel position="stacked">Nombre de usuario</IonLabel>
+            <IonIcon icon={person} slot="start" className="input-icon" />
+            <IonInput
+              type="text"
+              placeholder="Ingrese su nombre de usuario"
+              value={formData.username}
+              onIonChange={(e) => handleInputChange("username", e.detail.value!)}
+              className={formData.username ? "has-value" : ""}
+            />
+          </IonItem>
+
           <IonItem className="signup-item">
             <IonLabel position="stacked">Correo electrónico</IonLabel>
             <IonIcon icon={mail} slot="start" className="input-icon" />
@@ -145,7 +155,6 @@ const SignUp: React.FC = () => {
             />
           </IonItem>
 
-          {/* Campo contraseña */}
           <IonItem className="signup-item">
             <IonLabel position="stacked">Contraseña</IonLabel>
             <IonIcon icon={key} slot="start" className="input-icon" />
@@ -157,15 +166,10 @@ const SignUp: React.FC = () => {
                 onIonChange={(e) => handleInputChange("password", e.detail.value!)}
                 className={formData.password ? "has-value" : ""}
               />
-              <IonIcon
-                icon={showPassword ? eyeOff : eye}
-                onClick={() => setShowPassword(!showPassword)}
-                className="password-toggle"
-              />
+              <IonIcon icon={showPassword ? eyeOff : eye} onClick={() => setShowPassword(!showPassword)} className="password-toggle" />
             </div>
           </IonItem>
 
-          {/* Campo confirmar contraseña */}
           <IonItem className="signup-item">
             <IonLabel position="stacked">Confirmar contraseña</IonLabel>
             <IonIcon icon={key} slot="start" className="input-icon" />
@@ -177,25 +181,14 @@ const SignUp: React.FC = () => {
                 onIonChange={(e) => handleInputChange("confirmPassword", e.detail.value!)}
                 className={formData.confirmPassword ? "has-value" : ""}
               />
-              <IonIcon
-                icon={showConfirmPassword ? eyeOff : eye}
-                onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                className="password-toggle"
-              />
+              <IonIcon icon={showConfirmPassword ? eyeOff : eye} onClick={() => setShowConfirmPassword(!showConfirmPassword)} className="password-toggle" />
             </div>
           </IonItem>
 
-          {/* Botón registrarse */}
-          <IonButton
-            expand="block"
-            className="signup-button"
-            onClick={handleSignUp}
-            disabled={isLoading}
-          >
+          <IonButton expand="block" className="signup-button" onClick={handleSignUp} disabled={isLoading}>
             {isLoading ? "Creando cuenta..." : "Registrarse"}
           </IonButton>
 
-          {/* Enlace para ir al login */}
           <div className="signup-links">
             <IonText color="medium">
               ¿Ya tienes una cuenta?{" "}
@@ -206,7 +199,6 @@ const SignUp: React.FC = () => {
           </div>
         </div>
 
-        {/* Toast para notificaciones - ABAJO */}
         <IonToast
           isOpen={showToast}
           onDidDismiss={() => setShowToast(false)}
@@ -215,13 +207,7 @@ const SignUp: React.FC = () => {
           color={toastColor}
           position="bottom"
           cssClass={`custom-toast toast-${toastColor}`}
-          buttons={[
-            {
-              text: 'Aceptar',
-              role: 'cancel',
-              handler: () => setShowToast(false)
-            }
-          ]}
+          buttons={[{ text: "Aceptar", role: "cancel", handler: () => setShowToast(false) }]}
         />
       </IonContent>
     </IonPage>
